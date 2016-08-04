@@ -1,4 +1,4 @@
-package ru.sbt.homework5;
+package ru.sbt.homework5.part1;
 
 import java.io.*;
 import java.util.ArrayList;
