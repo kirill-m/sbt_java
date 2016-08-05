@@ -1,34 +1,36 @@
 package ru.sbt.homework5.part2;
 
+import ru.sbt.homework5.part2.exceptions.NotAllowedOperationException;
+
+import javax.security.auth.login.AccountLockedException;
+
 /**
  * Created by kirill on 04.08.16
  */
 public class TerminalImpl implements Terminal {
     private final TerminalServer server;
     private final PinValidator pinValidator;
+    private Account user;
 
-    public TerminalImpl(String pin, PinValidator pinValidator) {
-        this.pinValidator = pinValidator;
-
-        if (pinValidator.checkPin(pin))
-            server = new TerminalServer(0, true);
-        else
-            server = new TerminalServer(server.getAttemptsNumber() + 1, false);
+    public TerminalImpl(int userId) {
+        this.pinValidator = new PinValidator();
+        this.server = new TerminalServer();
+        this.user = server.getUserById(userId);
     }
 
 
     @Override
-    public int checkAccount() {
+    public int checkBalance() {
         if (server.isAccessGranted())
-            return server.requestBalance();
+            return server.requestBalance(user.getId());
         else
             throw new NotAllowedOperationException("Operation is not allowed. Enter pin first.", new RuntimeException());
     }
 
     @Override
-    public boolean getMoney(int money) {
+    public void getMoney(int money) {
         if (server.isAccessGranted())
-            return server.getMoney(money);
+            server.getMoney(user.getId() ,money);
         else
             throw new NotAllowedOperationException("Operation is not allowed. Enter pin first.", new RuntimeException());
     }
@@ -36,8 +38,22 @@ public class TerminalImpl implements Terminal {
     @Override
     public void putMoney(int money) {
         if (server.isAccessGranted())
-            server.putMoney(money);
+            server.putMoney(user.getId() ,money);
         else
             throw new NotAllowedOperationException("Operation is not allowed. Enter pin first.", new RuntimeException());
+    }
+
+    public boolean enterPin(String pin) {
+        if (pinValidator.checkPin(user.getId(), pin)) {
+            server.pinCorrect();
+            return true;
+        } else {
+            try {
+                server.pinWrong(user.getId());
+            } catch (AccountLockedException e) {
+                System.out.println(e.getMessage());
+            }
+            return false;
+        }
     }
 }

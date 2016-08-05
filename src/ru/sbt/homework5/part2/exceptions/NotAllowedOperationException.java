@@ -1,10 +1,9 @@
-package ru.sbt.homework5.part2;
+package ru.sbt.homework5.part2.exceptions;
 
 /**
  * Created by kirill on 04.08.16.
  */
 public class NotAllowedOperationException extends RuntimeException {
-
 
     public NotAllowedOperationException(String s, RuntimeException e) {
         super(s, e);
