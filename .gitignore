@@ -4,3 +4,4 @@
 workspace.xml
 *.iws
 *.log
+pluginDir/

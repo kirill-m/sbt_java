@@ -12,7 +12,7 @@ public class BeanUtilsTest {
         System.out.println("Before:");
         System.out.println(date1.getMonth());
         System.out.println(date2.getMonth());
-        
+
         System.out.println("After:");
         BeanUtils.assign(date2, date1);
         System.out.println(date1.getMonth());
