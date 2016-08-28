@@ -21,8 +21,5 @@ public class TaskExamples {
         new Thread(run).start();
         new Thread(run).start();
         new Thread(run).start();
-        new Thread(run).start();
-        new Thread(run).start();
-        new Thread(run).start();
     }
 }

@@ -8,7 +8,6 @@ import java.util.concurrent.Callable;
 public class Task<T> {
     private final Object lock = new Object();
     private final Callable<? extends T> callable;
-    private volatile boolean isLocked = false;
     private T cache = null;
     private volatile Exception exception = null;
 
@@ -16,27 +15,21 @@ public class Task<T> {
         this.callable = callable;
     }
 
-    public T get() {
+    public synchronized T get() {
         if (exception != null)
             throw new SuddenException("An exception has been thrown", exception);
 
-        synchronized (lock) {
-            if (cache != null) return cache;
-            T result = null;
-            try {
-                result = callable.call();
-                cache = result;
-                return result;
-            } catch (Exception e) {
-                exception = e;
-                throw new RuntimeException("Unable to compute a result", e);
-            }
+        if (cache != null) {
+            return cache;
         }
-    }
-
-    private void unlock() {
-        synchronized (lock) {
-            notify();
+        T result = null;
+        try {
+            result = callable.call();
+            cache = result;
+            return result;
+        } catch (Exception e) {
+            exception = e;
+            throw new RuntimeException("Unable to compute a result", e);
         }
     }
 }
