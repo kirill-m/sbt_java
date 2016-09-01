@@ -19,6 +19,9 @@ public class TaskExamples {
 
         new Thread(run).start();
         new Thread(run).start();
+        new Thread(run).start();
+        new Thread(run).start();
+        new Thread(run).start();
         Thread.sleep(2000);
         new Thread(run).start();
         new Thread(run).start();
