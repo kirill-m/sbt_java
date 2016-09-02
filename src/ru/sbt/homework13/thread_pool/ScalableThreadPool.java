@@ -40,11 +40,11 @@ public class ScalableThreadPool implements ThreadPool {
         synchronized (lock) {
             tasks.add(runnable);
             lock.notify();
-        }
 
-        if (currentSleepingCount == 0 && pool.size() >= minCount && pool.size() < maxCount) {
-            pool.add(new Worker());
-            pool.get(pool.size() - 1).start();
+            if (currentSleepingCount == 0 && pool.size() >= minCount && pool.size() < maxCount) {
+                pool.add(new Worker());
+                pool.get(pool.size() - 1).start();
+            }
         }
     }
 
