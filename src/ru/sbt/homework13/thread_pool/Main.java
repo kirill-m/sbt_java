@@ -5,16 +5,29 @@ package ru.sbt.homework13.thread_pool;
  */
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        ThreadPool pool = new FixedThreadPool(5);
+        Runnable runnable = () -> {
+            int i = 0;
+            for (int j = 0; j < 1_000_000_000; j++) {
+                i += j;
+            }
+            System.out.println(i);
+        };
 
-        pool.execute(()-> System.out.println(1));
-        pool.execute(()-> System.out.println(2));
+        ThreadPool pool = new ScalableThreadPool(5, 7);
+
+        pool.execute(runnable);
+        pool.execute(runnable);
+        pool.execute(runnable);
+        pool.execute(runnable);
+        pool.execute(runnable);
 
         pool.start();
 
-        pool.execute(()-> System.out.println(3));
-        pool.execute(()-> System.out.println(3));
-        pool.execute(()-> System.out.println(3));
-        pool.execute(()-> System.out.println(3));
+        pool.execute(runnable);
+        pool.execute(runnable);
+        pool.execute(runnable);
+        pool.execute(runnable);
+
+
     }
 }
