@@ -19,6 +19,9 @@ public class ScalableThreadPool implements ThreadPool {
     private final List<Worker> pool = new ArrayList<>();
 
     public ScalableThreadPool(int minCount, int maxCount) {
+        if (minCount > maxCount) {
+            throw new IllegalArgumentException("maxCount argument must be greater than or equals to minCount");
+        }
         this.minCount = minCount;
         this.maxCount = maxCount;
     }
@@ -34,17 +37,15 @@ public class ScalableThreadPool implements ThreadPool {
 
     @Override
     public void execute(Runnable runnable) {
-        tasks.add(runnable);
+        synchronized (lock) {
+            tasks.add(runnable);
+            lock.notify();
+        }
 
         if (currentSleepingCount == 0 && pool.size() >= minCount && pool.size() < maxCount) {
             pool.add(new Worker());
             pool.get(pool.size() - 1).start();
         }
-
-        synchronized (lock) {
-            lock.notify();
-        }
-
     }
 
     private void currentSleepingCountInc() {
@@ -66,33 +67,24 @@ public class ScalableThreadPool implements ThreadPool {
         }
     }
 
-    /*
-    *  Debugging helper method
-    * */
-    private void printAll() {
-        System.out.println("Current sleeping count: " + currentSleepingCount);
-        System.out.println("Pool size: " + pool.size());
-        System.out.println("Tasks size: " + tasks.size());
-        System.out.println("--------------------------");
-    }
 
     public class Worker extends Thread {
         @Override
         public void run() {
             while (true) {
-                Runnable task = tasks.poll();
-                while (task == null) {
-                    synchronized (lock) {
+                Runnable task;
+                synchronized (lock) {
+                    while (tasks.isEmpty()) {
                         try {
                             currentSleepingCountInc();
                             lock.wait();
-                            task = tasks.poll();
-                            currentSleepingCountDec();
                         } catch (InterruptedException e) {
                             Logger.getLogger("hw13.thread_pool")
                                     .log(Level.INFO, "Worker has been interrupted while waiting", e);
                         }
                     }
+                    task = tasks.poll();
+                    currentSleepingCountDec();
                 }
                 try {
                     task.run();
@@ -101,5 +93,15 @@ public class ScalableThreadPool implements ThreadPool {
                 }
             }
         }
+    }
+
+    /*
+    *  Debugging helper method
+    * */
+    private void printAll() {
+        System.out.println("Current sleeping count: " + currentSleepingCount);
+        System.out.println("Pool size: " + pool.size());
+        System.out.println("Tasks size: " + tasks.size());
+        System.out.println("--------------------------");
     }
 }

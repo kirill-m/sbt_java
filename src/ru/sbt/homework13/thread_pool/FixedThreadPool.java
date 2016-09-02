@@ -24,8 +24,8 @@ public class FixedThreadPool implements ThreadPool {
 
     @Override
     public void execute(Runnable runnable) {
-        tasks.add(runnable);
         synchronized (lock) {
+            tasks.add(runnable);
             lock.notify();
         }
     }
@@ -34,16 +34,16 @@ public class FixedThreadPool implements ThreadPool {
         @Override
         public void run() {
             while (true) {
-                Runnable task = tasks.poll();
-                while(task == null) {
-                    synchronized (lock) {
+                Runnable task;
+                synchronized (lock) {
+                    while(tasks.isEmpty()) {
                         try {
                             lock.wait();
-                            task = tasks.poll();
                         } catch (InterruptedException e) {
                             throw new WorkerException("Worker has been interrupted while waiting", e);
                         }
                     }
+                    task = tasks.poll();
                 }
                 try {
                     task.run();
