@@ -5,18 +5,21 @@ package ru.sbt.homework12.execution_manager;
  */
 public class CallbackRunnable implements Runnable {
     private final Runnable runnable;
+    private final ThreadPool pool;
 
-    CallbackRunnable(Runnable runnable) {
+    CallbackRunnable(Runnable runnable, ThreadPool pool) {
         this.runnable = runnable;
+        this.pool = pool;
     }
 
     @Override
     public void run() {
         try {
             runnable.run();
-            ThreadPool.threadsFinishedInc();
+
+            pool.threadsFinishedInc();
         } catch (RuntimeException e) {
-            ThreadPool.threadsFailedInc();
+            pool.threadsFailedInc();
         }
 
     }

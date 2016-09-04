@@ -22,14 +22,16 @@ public class ExecutionManagerMain {
         }
     };
 
-    static Runnable runnableWithException = () -> {throw new RuntimeException("Synthetic exception");};
+    static Runnable runnableWithException = () -> {
+        throw new RuntimeException("Synthetic exception");
+    };
 
     static Runnable[] runnables = {runnable, runnableLong, runnableWithException, runnableLong, runnableLong, runnable, runnable};
 
     static Runnable callback = () -> System.out.println("Callback!");
 
     public static void main(String[] args) throws InterruptedException {
-        ExecutionManager executionManager = new ExecutionManagerImpl(5);
+        ExecutionManager executionManager = new ExecutionManagerImpl();
         Context context = executionManager.execute(callback, runnables);
         Thread.sleep(5000);
         context.interrupt();
