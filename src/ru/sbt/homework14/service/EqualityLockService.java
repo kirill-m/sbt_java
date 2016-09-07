@@ -19,7 +19,6 @@ public class EqualityLockService implements Service {
         while (objects.containsKey(o)) {
             synchronized (objects.get(o)) {
                 try {
-                    System.out.println("contains");
                     objects.get(o).wait();
                 } catch (InterruptedException e) {
                     throw new RuntimeException("Thread has been interrupted while waiting", e);
@@ -28,7 +27,6 @@ public class EqualityLockService implements Service {
         }
         objects.put(o, o);
         service.run(o);
-        System.out.println("Finished: " + o);
 
         synchronized (objects.get(o)) {
             objects.get(o).notify();

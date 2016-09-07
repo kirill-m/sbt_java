@@ -18,6 +18,8 @@ public class ServiceMain {
         new Thread(() -> {service.run(2);}).start();
         Thread.sleep(10);
         new Thread(() -> {service.run(1);}).start();
+        new Thread(() -> {service.run(1);}).start();
+        new Thread(() -> {service.run(1);}).start();
         new Thread(() -> {service.run(2);}).start();
         new Thread(() -> {service.run("str");}).start();
         new Thread(() -> {service.run(2);}).start();
