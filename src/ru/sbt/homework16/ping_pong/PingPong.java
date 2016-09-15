@@ -28,7 +28,7 @@ public class PingPong {
                         try {
                             PingPong.class.wait();
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            throw new RuntimeException("Exception happened while Player waiting", e);
                         }
                     }
                     System.out.println(word);
