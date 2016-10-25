@@ -6,7 +6,7 @@ import java.sql.SQLException;
 /**
  * Created by kirill on 16.09.16
  */
-public class HtmlPageBuilder {
+public class HtmlPageBuilder implements ReportBuilder {
     private final ResultSet result;
 
     public HtmlPageBuilder(ResultSet result) {

@@ -1,4 +1,7 @@
-package ru.sbt.homework17.notifier.database;
+package ru.sbt.homework17.notifier.database.database_helper;
+
+import ru.sbt.homework17.notifier.database.DatabaseConst;
+import ru.sbt.homework17.notifier.database.DateRange;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,14 +12,15 @@ import java.time.LocalDate;
 /**
  * Created by kirill on 16.09.16
  */
-public class DatabaseHelper {
+
+public class DatabaseHelperImpl implements DatabaseHelper {
     private final Connection connection;
 
-    public DatabaseHelper(Connection connection) {
+    public DatabaseHelperImpl(Connection connection) {
         this.connection = connection;
     }
 
-    public ResultSet executeQuery(String departmentId, DateRange dateRange) {
+    public ResultSet executeQuery(String query, String departmentId, DateRange dateRange) {
         PreparedStatement ps = getPreparedStatement(DatabaseConst.QUERY);
         injectParams(ps, departmentId, dateRange);
         try {
@@ -37,7 +41,6 @@ public class DatabaseHelper {
     private void injectParams(PreparedStatement ps, String departmentId, DateRange dateRange) {
         LocalDate dateFrom = dateRange.getDateFrom();
         LocalDate dateTo = dateRange.getDateTo();
-
         try {
             ps.setString(0, departmentId);
             ps.setDate(1, new java.sql.Date(dateFrom.toEpochDay()));
